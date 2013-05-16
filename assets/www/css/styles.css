@@ -1,0 +1,41 @@
+/**
+ *
+ * Helicopter Game styles
+ *
+ * @author Rogier van der Linde
+ *
+ */
+
+/*********************************************
+ * GENERAL SETUP
+ *********************************************/
+
+body {
+	background-color: #333;
+	font-family: Arial;
+	font-size: 22px;
+	margin: 0px;
+	-webkit-tap-highlight-color:  rgba(255, 255, 255, 0); 
+}
+
+
+#app {
+	background-image: url(../img/startscreen.png);
+	background-size: 100%;
+	background-position: center top;
+	-webkit-tap-highlight-color:  rgba(255, 255, 255, 0); 
+}
+
+#daynight li {
+	display: inline-block;
+}
+
+#daynight li a {
+	text-decoration: none;
+	color: #ccc;
+}
+
+#daynight li a:hover, #daynight li a.active {
+	text-decoration: underline;
+	color: #fff;
+}
