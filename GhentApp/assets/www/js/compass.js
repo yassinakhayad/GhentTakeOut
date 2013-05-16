@@ -21,6 +21,6 @@
 	    // onSuccess: Get a snapshot of the current acceleration
 	    //
 	    function compassSuccess(heading) {
-	    	alert(heading.magneticHeading);
+	    	console.log(heading.magneticHeading);
 	    }
 	
