@@ -3780,7 +3780,7 @@ module.exports = ProgressEvent;
 
 });
 
-// file: lib/common/plugin/accelerometer.js
+// file: lib/common/plugin/compass.js
 define("cordova/plugin/accelerometer", function(require, exports, module) {
 
 /**
