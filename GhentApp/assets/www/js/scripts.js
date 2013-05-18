@@ -1,7 +1,8 @@
 
 function onDeviceReady(){
-    setup();
-    startWatchCompass();
+    //setup();
+    //startWatchCompass();
+    makeCall();
 }
 
 function onError(){
@@ -38,16 +39,25 @@ function getInfo(){
     });
 
 }
-
-var makeCall = function() {
+function makeCall() {
     // Config
     var apiBaseUrl = 'http://api.qype.com/v1';
 
     var apiUrlSuffix = '/places';
     var url = apiBaseUrl + apiUrlSuffix;
-    $.getJSON("http://api.qype.com/v1/places/show=a&in=gent?consumer_key=u0smpYg86snHm2ia9kE6Q", function(data) {
-        alert('ik krijgi nfo?');
+    $.getJSON("http://api.qype.com/v1/positions/51.053468,3.73038/places?consumer_key=u0smpYg86snHm2ia9kE6Q", function(data) {
+        var mijnobj = $.xml2json(data);
+        //$('#places').html(mijnobj.toString());
+        //$.JSONView(data, $('#places'));
+        var i = 0;
+        //$('#places').html(JSON.stringify(data));
+
+        var size = data['results'].length;
+        for(var i = 0 ; i < size ; i++){
+            $('#places').append(data['results'][i]['place']['title']);
+        }
+
     });
-    alert('hoid');
+
 }
 document.addEventListener('deviceready', onDeviceReady, false);
