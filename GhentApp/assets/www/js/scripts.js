@@ -8,34 +8,22 @@ function onDeviceReady(){
 function onError(){
     console.log('err');
 }
+
 function createMarker(place) {
     var placeLoc = place.geometry.location;
     var marker = new google.maps.Marker({
         map: map,
         position: place.geometry.location
     });
+
     infowindow  = new google.maps.InfoWindow();
     google.maps.event.addListener(marker, 'click', function () {
         infowindow.setContent(place.name);
         infowindow.open(map, this);
     });
 }
-function detailsCallback(result, status){
-    alert(status);
-}
-function nearByCallback(results, status) {
 
-    if (status == google.maps.places.PlacesServiceStatus.OK) {
-        var listed = "<ul>";
-        for (var i = 0; i < results.length; i++) {
-            var place = results[i];
-            createMarker(results[i]);
-            listed += '<li>' +place['name']+ '</li>';
-        }
-        listed += '</ul>';
-        $('#places').html(listed);
-    }
-}
+
 function onSuccess(position) {
     var myLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
     map  = new google.maps.Map(document.getElementById('map'), {
@@ -43,10 +31,34 @@ function onSuccess(position) {
         center: myLocation,
         zoom: 15
     });
-    var request = { location: myLocation, radius: '300', types: ['food'] };
+    var request = { location: myLocation, radius: '15000', types: ['food','restaurant','museum','jewelry_store'] };
     var service = new google.maps.places.PlacesService(map);
-    service.nearbySearch(request, nearByCallback);
-    //service.getDetails(request, detailsCallback)
+    service.nearbySearch(request, function(results, status) {
+
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+            var listed = "<ul>";
+            for (var i = 0; i < results.length; i++) {
+                var place = results[i];
+                createMarker(results[i]);
+                listed += '<li>' +place['name']+ '</li>';
+                var refreq = {reference: place['reference']};
+
+                service.getDetails(refreq, function (result, status){
+
+                    listed += '<li> This type is :' +place['types']+ '</li>';
+
+                    var images = place['vicinity'];
+                    alert(images);
+                    //if(images){
+                        //listed += '<img src"' + images[0].getUrl() + '"/>';
+                    //}
+                });
+            }
+            listed += '</ul>';
+            $('#places').html(listed);
+        }
+    });
+
 }
 function setup() {
     navigator.geolocation.getCurrentPosition(onSuccess, onError);
