@@ -1,12 +1,42 @@
 
 function onDeviceReady(){
-    //setup();
-    //startWatchCompass();
-    makeCall();
+    setup();
+    startWatchCompass();
+    //makeCall();
 }
 
 function onError(){
     console.log('err');
+}
+function createMarker(place) {
+    var placeLoc = place.geometry.location;
+    var marker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location
+    });
+    infowindow  = new google.maps.InfoWindow();
+    google.maps.event.addListener(marker, 'click', function () {
+        infowindow.setContent(place.name);
+        infowindow.open(map, this);
+    });
+}
+function detailsCallback(result, status){
+    alert(status);
+}
+function nearByCallback(results, status) {
+
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+        var listed = "<ul>";
+        for (var i = 0; i < results.length; i++) {
+            var place = results[i];
+            var request = {location:place.geometry.location};
+            createMarker(results[i]);
+            listed += '<li>' +place['name']+ '</li>';
+            service.getDetails(request, detailsSucces);
+        }
+        listed += '</ul>';
+        $('#places').html(listed);
+    }
 }
 function onSuccess(position) {
     var myLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -15,7 +45,10 @@ function onSuccess(position) {
         center: myLocation,
         zoom: 15
     });
-
+    var request = { location: myLocation, radius: '300', types: ['food'] };
+    var service = new google.maps.places.PlacesService(map);
+    service.nearbySearch(request, nearByCallback);
+    //service.getDetails(request, detailsCallback)
 }
 function setup() {
     navigator.geolocation.getCurrentPosition(onSuccess, onError);
