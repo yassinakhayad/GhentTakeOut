@@ -8,7 +8,21 @@ function onDeviceReady(){
 function onError(){
     console.log('err');
 }
+function checkInformation(place){
 
+    var service = new google.maps.places.PlacesService(map);
+    var refreq = {reference: place['reference']};
+    service.getDetails(refreq, function (result, status){
+
+        var images = place.photos;
+
+        if(images){
+            alert(images[0].getUrl({'maxWidth': 1000, 'maxHeight': 1000}));
+             $('#places').append('<img src="' + images[0].getUrl({'maxWidth': 1000, 'maxHeight': 1000}) +'"/>');
+
+        }
+    });
+}
 function createMarker(place) {
     var placeLoc = place.geometry.location;
     var marker = new google.maps.Marker({
@@ -21,6 +35,8 @@ function createMarker(place) {
         infowindow.setContent(place.name);
         infowindow.open(map, this);
     });
+    checkInformation(place);
+
 }
 
 
@@ -41,21 +57,10 @@ function onSuccess(position) {
                 var place = results[i];
                 createMarker(results[i]);
                 listed += '<li>' +place['name']+ '</li>';
-                var refreq = {reference: place['reference']};
-
-                service.getDetails(refreq, function (result, status){
-
-                    listed += '<li> This type is :' +place['types']+ '</li>';
-
-                    var images = place['vicinity'];
-                    alert(images);
-                    //if(images){
-                        //listed += '<img src"' + images[0].getUrl() + '"/>';
-                    //}
-                });
+                $('#places').html(listed);
             }
             listed += '</ul>';
-            $('#places').html(listed);
+
         }
     });
 

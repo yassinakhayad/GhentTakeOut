@@ -21,6 +21,6 @@
 	    // onSuccess: Get a snapshot of the current acceleration
 	    //
 	    function compassSuccess(heading) {
-	    	console.log(heading.magneticHeading);
+            map.setHeading(heading.magneticHeading);
 	    }
 	
