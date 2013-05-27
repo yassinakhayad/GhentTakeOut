@@ -8,8 +8,10 @@ function onDeviceReady(){
 function onError(){
     console.log('err');
 }
-function checkInformation(place){
+function checkInformation(results){
+    for (var i = 0; i < results.length; i++) {
 
+    }
     var service = new google.maps.places.PlacesService(map);
     var refreq = {reference: place['reference']};
     service.getDetails(refreq, function (result, status){
@@ -17,9 +19,8 @@ function checkInformation(place){
         var images = place.photos;
 
         if(images){
-            alert(images[0].getUrl({'maxWidth': 1000, 'maxHeight': 1000}));
-             $('#places').append('<img src="' + images[0].getUrl({'maxWidth': 1000, 'maxHeight': 1000}) +'"/>');
-
+            listed += '<li>' +place['name']+ '</li>';
+            $('#places').append('<img src="' + images[0].getUrl({'maxWidth': 1000, 'maxHeight': 1000}) +' style="width:20%; height:20%;""/>');
         }
     });
 }
@@ -35,7 +36,7 @@ function createMarker(place) {
         infowindow.setContent(place.name);
         infowindow.open(map, this);
     });
-    checkInformation(place);
+
 
 }
 
@@ -52,15 +53,11 @@ function onSuccess(position) {
     service.nearbySearch(request, function(results, status) {
 
         if (status == google.maps.places.PlacesServiceStatus.OK) {
-            var listed = "<ul>";
             for (var i = 0; i < results.length; i++) {
                 var place = results[i];
                 createMarker(results[i]);
-                listed += '<li>' +place['name']+ '</li>';
-                $('#places').html(listed);
             }
-            listed += '</ul>';
-
+            checkInformation(results);
         }
     });
 

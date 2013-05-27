@@ -1,0 +1,10 @@
+#app{
+    width: 100%;
+    background: -webkit-radial-gradient(center, ellipse cover, #a7cfdf 0%,#23538a 100%);
+}
+body{
+    background-color: #23538a;
+}
+h1{
+    color:white;
+}
