@@ -1,86 +1,155 @@
 
+
+var destinationPosition;
+var destinationBearing;
+
+var positionTimerId;
+var currentPosition;
+var prevPosition;
+var prevPositionError;
+
+var compassTimerId;
+var currentHeading;
+var prevHeading;
+var prevCompassErrorCode;
+
 function onDeviceReady(){
-    setup();
-    startWatchCompass();
-    //makeCall();
+    minPositionAccuracy = 50; // Minimum accuracy in metres to accept as a reliable position
+    minUpdateDistance = 1; // Minimum number of metres to move before updating distance to destination
+    alert('');
+    $targetLat = $('#target-lat');
+    $targetLon = $('#target-lon');
+    $error = $('#error');
+    $results = $('#results');
+    $distance = $('#distance');
+    $bearing = $('#bearing');
+    $heading = $('#heading');
+    $difference = $('#difference');
+    $arrow = $('#arrow');
+
+
+    watchPosition();
+    watchCompass();
+
+    // Set destination
+    $targetLat.change(updateDestination);
+    $targetLon.change(updateDestination);
+    updateDestination();
+
 }
 
-function onError(){
-    console.log('err');
+function watchPosition(){
+    if(positionTimerId) navigator.geolocation.clearWatch(positionTimerId);
+    positionTimerId = navigator.geolocation.watchPosition(onPositionUpdate, onPositionError, {
+        enableHighAccuracy: true,
+        timeout: 1000,
+        maxiumumAge: 0
+    });
 }
-function checkInformation(results){
-    for (var i = 0; i < results.length; i++) {
 
+function watchCompass(){
+    if(compassTimerId) navigator.compass.clearWatch(compassTimerId);
+    compassTimerId = navigator.compass.watchHeading(onCompassUpdate, onCompassError, {
+        frequency: 100 // Update interval in ms
+    });
+}
+
+function onPositionUpdate(position){
+    if(position.coords.accuracy > minPositionAccuracy) return;
+
+    prevPosition = currentPosition;
+    currentPosition = new LatLon(position.coords.latitude, position.coords.longitude);
+
+    if(prevPosition && prevPosition.distanceTo(currentPosition)*1000 < minUpdateDistance) return;
+
+    updatePositions();
+}
+
+function onPositionError(error){
+    watchPosition();
+
+    if(prevPositionError && prevPositionError.code == error.code && prevPositionError.message == error.message) return;
+
+    $error.html("Error while retrieving current position. <br/>Error code: " + error.code + "<br/>Message: " + error.message);
+
+    if(!$error.is(":visible")){
+        $error.show();
+        $results.hide();
     }
-    var service = new google.maps.places.PlacesService(map);
-    var refreq = {reference: place['reference']};
-    service.getDetails(refreq, function (result, status){
 
-        var images = place.photos;
-
-        if(images){
-            listed += '<li>' +place['name']+ '</li>';
-            $('#places').append('<img src="' + images[0].getUrl({'maxWidth': 1000, 'maxHeight': 1000}) +' style="width:20%; height:20%;""/>');
-        }
-    });
-}
-function createMarker(place) {
-    var placeLoc = place.geometry.location;
-    var marker = new google.maps.Marker({
-        map: map,
-        position: place.geometry.location
-    });
-
-    infowindow  = new google.maps.InfoWindow();
-    google.maps.event.addListener(marker, 'click', function () {
-        infowindow.setContent(place.name);
-        infowindow.open(map, this);
-    });
-
-
+    prevPositionError = {
+        code: error.code,
+        message: error.message
+    };
 }
 
+function onCompassUpdate(heading){
+    prevHeading = currentHeading;
+    currentHeading = heading.trueHeading >= 0 ? Math.round(heading.trueHeading) : Math.round(heading.magneticHeading);
 
-function onSuccess(position) {
-    var myLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-    map  = new google.maps.Map(document.getElementById('map'), {
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        center: myLocation,
-        zoom: 15
-    });
-    var request = { location: myLocation, radius: '15000', types: ['food','restaurant','museum','jewelry_store'] };
-    var service = new google.maps.places.PlacesService(map);
-    service.nearbySearch(request, function(results, status) {
+    if(currentHeading == prevHeading) return;
 
-        if (status == google.maps.places.PlacesServiceStatus.OK) {
-            for (var i = 0; i < results.length; i++) {
-                var place = results[i];
-                createMarker(results[i]);
-            }
-            checkInformation(results);
-        }
-    });
-
+    updateHeading();
 }
-function setup() {
-    navigator.geolocation.getCurrentPosition(onSuccess, onError);
+
+function onCompassError(error){
+    watchCompass();
+
+    if(prevCompassErrorCode && prevCompassErrorCode == error.code) return;
+
+    var errorType;
+    switch(error.code){
+        case 1:
+            errorType = "Compass not supported";
+            break;
+        case 2:
+            errorType = "Compass internal error";
+            break;
+        default:
+            errorType = "Unknown compass error";
+    }
+
+    $error.html("Error while retrieving compass heading: "+errorType);
+
+    if(!$error.is(":visible")){
+        $error.show();
+        $results.hide();
+    }
+
+    prevCompassErrorCode = error.code;
+}
+
+function updateDestination(){
+    destinationPosition = new LatLon($targetLat.val(), $targetLon.val());
+    updatePositions();
 }
 
 
-function makeCall() {
-    // Config
-    var apiBaseUrl = 'http://api.qype.com/v1';
+function updatePositions(){
+    if(!currentPosition) return;
 
-    var apiUrlSuffix = '/places';
-    var url = apiBaseUrl + apiUrlSuffix;
-    $.getJSON("http://api.qype.com/v1/positions/51.053468,3.73038/places?consumer_key=u0smpYg86snHm2ia9kE6Q", function(data) {
-        var i = 0;
-        var size = data['results'].length;
-        for(var i = 0 ; i < size ; i++){
-            $('#places').append(data['results'][i]['place']['title']);
-        }
+    if(!$results.is(":visible")){
+        $results.show();
+        $error.hide();
+    }
 
-    });
+    destinationBearing = Math.round(currentPosition.bearingTo(destinationPosition));
 
+    $distance.html(Math.round(currentPosition.distanceTo(destinationPosition)*1000));
+    $bearing.html(destinationBearing);
+
+    updateDifference();
 }
+
+function updateHeading(){
+    $heading.html(currentHeading);
+    updateDifference();
+}
+
+function updateDifference(){
+    var diff = destinationBearing - currentHeading;
+    $difference.html(diff);
+    $arrow.css("-webkit-transform", "rotate("+diff+"deg)");
+}
+
 document.addEventListener('deviceready', onDeviceReady, false);

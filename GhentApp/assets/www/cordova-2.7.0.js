@@ -3780,7 +3780,7 @@ module.exports = ProgressEvent;
 
 });
 
-// file: lib/common/plugin/compass.js
+// file: lib/common/plugin/latlon.js
 define("cordova/plugin/accelerometer", function(require, exports, module) {
 
 /**
@@ -4703,7 +4703,7 @@ modulemapper.clobbers('cordova/plugin/capture', 'navigator.device.capture');
 
 });
 
-// file: lib/common/plugin/compass.js
+// file: lib/common/plugin/latlon.js
 define("cordova/plugin/compass", function(require, exports, module) {
 
 var argscheck = require('cordova/argscheck'),
