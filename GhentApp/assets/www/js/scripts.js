@@ -16,7 +16,7 @@ var prevCompassErrorCode;
 function onDeviceReady(){
     minPositionAccuracy = 50; // Minimum accuracy in metres to accept as a reliable position
     minUpdateDistance = 1; // Minimum number of metres to move before updating distance to destination
-    alert('');
+
     $targetLat = $('#target-lat');
     $targetLon = $('#target-lon');
     $error = $('#error');
