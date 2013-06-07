@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/jquery.mobile.structure-1.3.1.css" />
+        <link rel="stylesheet" type="text/css" href="css/mymobileapp.css" />
+            <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=true&amp;libraries=places,geometry,weather">
+    	</script>
+        <title>Ghent Touristic</title>
+    </head>
+    <body>
+    <div id="app">
+        <div data-role="page" id="main" data-theme="a">
+            <div data-role="header">
+                <h1>
+                    Ghent Touristic
+                </h1>
+                 <a href="#left-panel" data-icon="bars">Menu</a>
+            </div>
+            <div data-role="content" id="placecontent" data-theme="a" >
+                <div id="photoslides">
+                </div>
+                <div id="place">
+                    <h2 id="placeName"></h2>
+
+                    <ul id="info">
+                        <span class="info-left">Type:
+                        </span> <li id="icon"></li>
+                        <span class="info-left">Rating:</span>
+                        <li><div id="star"></div></li>
+                        <span class="info-left">Available now:</span>
+                        <li id="available"></li>
+                    </ul>
+                    <ul id="contact">
+                        <li id="address"></li>
+                        <li id="tel"></li>
+                    </ul>
+                    <ul id="results" data-role="listview">
+                        <li><div id="arrow"></div></li>
+                        <li><span id="difference"></span></li>
+                        <li><span id="distance"></span></li>
+                    </ul>
+                </div>
+            </div>
+            <div data-role="panel" id="left-panel">
+                <ul data-role="listview" data-theme="d">
+                     <li data-icon="delete"><a href="#" data-rel="close">Close</a></li>
+                     <li><div id="map" style="width: 98%; height:12em; margin-top:1em;"/></li>
+                 </ul>
+                <label>Range(meters):</label>
+                <input type="range" name="slider1" id="sliderbar" value="1000" min="500" max="2000" step="200"  data-highlight="true" />
+                <div data-role="collapsible"  data-collapsed="true" data-inset="false" data-iconpos="right">
+                    <h3>All Places</h3>
+                    <div id="placed"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div data-role="popup" id="person">
+        <a href="person" data-rel="popup"></a>
+    </div>
+        <script type="text/javascript" src="cordova-2.6.0.js"></script>
+        <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.3.1.js"></script>
+        <script type="text/javascript" src="js/jquery.slides.js"></script>
+        <script type="text/javascript" src="js/jquery.raty.js"></script>
+        <script type="text/javascript" src="js/latlon.js"></script>
+        <script type="text/javascript" src="js/follower.js"></script>
+        <script type="text/javascript" src="js/recommander.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>
